@@ -1,0 +1,841 @@
+swagger: '2.0'
+info:
+  description: ''
+  version: 1.0.6
+  title: Cisco Duo
+  termsOfService: https://duo.com/legal/terms
+  contact:
+    email: support@duo.com
+basePath: /
+tags:
+  - name: auth
+    description: Duo Auth API
+    externalDocs:
+      description: Find out more
+      url: https://duo.com/docs/authapi#endpoints
+  - name: admin
+    description: Duo Admin API
+    externalDocs:
+      description: Find out more
+      url: https://duo.com/docs/adminapi#endpoints
+schemes:
+  - https
+  - http
+paths:
+  /auth/v2/ping:
+    get:
+      tags:
+        - auth
+      summary: liveliness check
+      description: 'The /ping endpoint acts as a "liveness check" that can be called to verify that Duo is up before trying to call other Auth API endpoints.'
+      operationId: ping
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/AuthApiResponse'
+  /auth/v2/check:
+    get:
+      tags:
+        - auth
+      summary: Authentication & HMAC signature check
+      description: 'The /check endpoint can be called to verify that the Auth API integration and secret keys are valid, and that the signature is being generated properly.'
+      operationId: check
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/AuthApiResponse'
+  /auth/v2/enroll:
+    post:
+      tags:
+        - auth
+      summary: Enroll new users with Duo two-factor authentication
+      description: 'The /enroll endpoint provides a programmatic way to enroll new users with Duo two-factor authentication. It creates the user in Duo and returns a code (as a QR code) that Duo Mobile can scan with its built-in camera.'
+      operationId: enroll
+      parameters:
+        - in: query
+          name: username
+          description: Username for the created user. If not given, a random username will be assigned and returned
+          required: false
+          type: string
+        - in: query
+          name: valid_secs
+          description: Seconds for which the activation code will remain valid. Default 86400.
+          required: false
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/EnrollResponse'
+        '400':
+          description: Invalid or missing parameters, or a user with username already exists.
+  /auth/v2/enroll_status:
+    post:
+      tags:
+        - auth
+      summary: Check whether a user has completed enrollment.
+      description: 'The /enroll endpoint provides a programmatic way to enroll new users with Duo two-factor authentication. It creates the user in Duo and returns a code (as a QR code) that Duo Mobile can scan with its built-in camera.'
+      operationId: enroll_status
+      parameters:
+        - in: query
+          name: username
+          description: Username for the created user. If not given, a random username will be assigned and returned
+          required: false
+          type: string
+        - in: query
+          name: activation_code
+          description: Activation code, as returned from /enroll.
+          required: false
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/EnrollStatusResponse'
+        '400':
+          description: Invalid or missing parameters, or a user with username already exists.
+  /admin/v1/users:
+    get:
+      tags:
+        - admin
+      summary: Retrieve users
+      description: 'Returns a paged list of users. To fetch all results, call repeatedly with the offset parameter as long as the result metadata has a next_offset value.'
+      operationId: retrieve_users
+      parameters:
+        - in: query
+          name: limit
+          description: The maximum number of records returned
+          required: false
+          type: integer
+        - in: query
+          name: offset
+          description: The offset from 0 at which to start record retrieval.
+          required: false
+          type: integer
+        - in: query
+          name: username
+          description: Specify a user name (or username alias) to look up a single user.
+          required: false
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/RetrieveUsers'
+        '400':
+          description: Invalid parameters.
+    post:
+      tags:
+        - admin
+      summary: Create new user
+      description: 'Create new user'
+      operationId: create user
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Create user parameters
+          required: false
+          schema:
+            $ref: '#/definitions/CreateUser'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/RetrieveUsers'
+        '400':
+          description: Invalid parameters.
+  /admin/v1/users/{userId}:
+    get:
+      tags:
+        - admin
+      summary: Retrieve users By Id
+      description: 'Return the single user with user_id. Requires "Grant read resource" API permission.'
+      operationId: retrieve_users_by_id
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user that needs to be fetched
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/RetrieveUsers'
+        '400':
+          description: No user was found with the given user_id.
+  /admin/v1/users/{userId}/tokens:
+    get:
+      tags:
+        - admin
+      summary: Retrieve hardware tokens by user id
+      description: 'Returns a paged list of OTP hardware tokens associated with the user with ID user_id'
+      operationId: retrieve_hardware_tokens_for_users_by_id
+      parameters:
+        - name: userId
+          in: path
+          description: ID of the user for whom the tokens needs to be fetched
+          required: true
+          type: string
+        - in: query
+          name: limit
+          description: The maximum number of records returned
+          required: false
+          type: integer
+        - in: query
+          name: offset
+          description: The offset from 0 at which to start record retrieval.
+          required: false
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/HardwareTokensForUser'
+        '400':
+          description: No user was found with the given user_id.
+  /admin/v1/logs/authentication:
+    get:
+      tags:
+        - logs
+      summary: Retrieve authentication logs
+      description: 'Returns a paged list of authentication log events ranging from the last 180 days up to as recently as two minutes before the API request. '
+      operationId: retrieve_auth_logs
+      parameters:
+        - in: query
+          name: limit
+          description: The maximum number of records returned. Default 100.
+          required: false
+          type: integer
+        - in: query
+          name: next_offset
+          description: The offset at which to start record retrieval.
+          required: false
+          type: string
+        - in: query
+          name: sort
+          description: Sort records in order.
+          required: false
+          type: string
+        - in: query
+          name: mintime
+          description: Return records that have a 13 character Unix timestamp in milliseconds of mintime or later. This value must be strictly less then maxtime.
+          required: true
+          type: integer
+        - in: query
+          name: maxtime
+          description: Return records that have a 13 character Unix timestamp in milliseconds of maxtime or earlier. This value must be strictly greater then mintime.
+          required: true
+          type: integer
+        - in: query
+          name: users
+          description: A user's user_id or the key value for a user returned in the authentication log output.
+          required: false
+          type: string
+        - in: query
+          name: event_types
+          description: The type of authentication event.
+          required: false
+          type: string
+          enum:
+            - authentication
+            - enrollment
+        - in: query
+          name: factors
+          description: The factor or method used for an authentication attempt.
+          required: false
+          type: string
+          enum:
+            - duo_push
+            - phone_call
+            - u2f_token
+            - hardware_token
+            - bypass_code
+            - sms_passcode
+            - duo_mobile_passcode
+            - yubikey_code
+            - passcode
+            - digipass_go_7_token
+            - WebAuthn Security Key
+            - sms_refresh
+            - not_available
+            - remembered_device
+            - trusted_network
+            - trusted_mobile_authenticator
+        - in: query
+          name: reasons
+          description: The reason associated with an authentication attempt.
+          required: false
+          type: string
+          enum:
+            - user_marked_fraud
+            - deny_unenrolled_user
+            - error
+            - locked_out
+            - user_disabled
+            - user_cancelled
+            - invalid_passcode
+            - no_response
+            - location_restricted
+            - factor_restricted
+            - platform_restricted
+            - user_approved
+            - valid_passcode
+            - allowed_by_policy
+            - trusted_location
+            - bypass_user
+        - in: query
+          name: groups
+          description: A group's group_id or the key value for a group returned in the authentication log output.
+          required: false
+          type: string
+        - in: query
+          name: phone_numbers
+          description: A group's group_id or the key value for a group returned in the authentication log output.
+          required: false
+          type: string
+        - in: query
+          name: results
+          description: The result of an authentication attempt.
+          required: false
+          type: string
+          enum:
+            - success
+            - denied
+            - fraud
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/AuthenticationLogs'
+        '400':
+          description: Invalid or missing parameters or mintime is after the maxtime.
+  /admin/v1/tokens:
+    get:
+      tags:
+        - tokens
+      summary: Retrieve hardware tokens
+      description: 'Returns a paged list of OTP hardware tokens. To fetch all results, call repeatedly with the offset parameter as long as the result metadata has a next_offset value. If no type and serial parameters are provided, the list will contain all hardware tokens. Otherwise, the list will contain either a single hardware token (if a match was found) or no hardware tokens. Requires "Grant read resource" API permission.'
+      operationId: retrieve_hardware_tokens
+      parameters:
+        - in: query
+          name: limit
+          description: The maximum number of records returned
+          required: false
+          type: integer
+        - in: query
+          name: offset
+          description: The offset from 0 at which to start record retrieval.
+          required: false
+          type: integer
+        - in: query
+          name: type
+          description: Specify a type and serial number to look up a single hardware token.
+          required: false
+          type: string
+          enum:
+            - h6
+            - h8
+            - d1
+            - yk
+        - in: query
+          name: serial
+          description: The serial number of the hardware token.
+          required: false
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/HardwareTokens'
+        '400':
+          description: Invalid parameters.
+  /admin/v1/tokens/{token_id}:
+    get:
+      tags:
+        - tokens
+      summary: Retrieve hardware tokens by id
+      description: 'Return the single hardware token with token_id. Requires "Grant read resource" API permission.'
+      operationId: retrieve_hardware_tokens_by_id
+      parameters:
+        - name: token_id
+          in: path
+          description: ID of the token
+          required: true
+          type: string
+        - in: query
+          name: limit
+          description: The maximum number of records returned
+          required: false
+          type: integer
+        - in: query
+          name: offset
+          description: The offset from 0 at which to start record retrieval.
+          required: false
+          type: integer
+        - in: query
+          name: type
+          description: Specify a type and serial number to look up a single hardware token.
+          required: false
+          type: string
+          enum:
+            - h6
+            - h8
+            - d1
+            - yk
+        - in: query
+          name: serial
+          description: The serial number of the hardware token.
+          required: false
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/HardwareTokens'
+        '400':
+          description: Invalid parameters.
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  HardwareTokens:
+    type: object
+    properties:
+      stat:
+        type: string
+      response:
+        type: object
+        properties:
+          admins:
+            type: array
+            items:
+              properties:
+                admin_id:
+                  type: string
+                created:
+                  type: integer
+                email:
+                  type: string
+                last_login:
+                  type: integer
+                name:
+                  type: string
+          serial:
+            type: string
+          token_id:
+            type: string
+          type:
+            type: string
+          totp_step:
+            type: string
+          users:
+            type: array
+            items:
+              properties:
+                alias1:
+                  type: string
+                alias2:
+                  type: string
+                created:
+                  type: integer
+                email:
+                  type: string
+                is_enrolled:
+                  type: boolean
+                realname:
+                  type: string
+                status:
+                  type: string
+                user_id:
+                  type: string
+                username:
+                  type: string
+
+  Ping:
+    type: object
+    properties:
+      time:
+        type: integer
+        format: int64
+  AuthApiResponse:
+    type: object
+    properties:
+      stat:
+        type: string
+      response:
+        $ref: '#/definitions/Ping'
+  EnrollResponse:
+    type: object
+    properties:
+      activation_barcode:
+        type: string
+      activation_code:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+      expiration:
+        type: integer
+  EnrollStatusResponse:
+    type: object
+    properties:
+       stat:
+        type: string
+       response:
+        type: string
+  RetrieveUsers:
+    type: array
+    items:
+      properties:
+        stat:
+          type: string
+        alias1:
+          type: string
+        alias2:
+          type: string
+        alias3:
+          type: string
+        alias4:
+          type: string
+        aliases:
+          type: object
+          properties:
+            alias1:
+              type: string
+            alias2:
+              type: string
+        created:
+          type: integer
+        email:
+          type: string
+        firstname:
+          type: string
+        groups:
+          type: object
+          properties:
+            desc:
+              type: string
+            group_id:
+              type: string
+            mobile_otp_enabled:
+              type: boolean
+            name:
+              type: string
+            push_enabled:
+              type: boolean
+            sms_enabled:
+              type: boolean
+            status:
+              type: string
+            voice_enabled:
+              type: boolean
+        is_enrolled:
+          type: boolean
+        last_directory_sync:
+          type: integer
+        last_login:
+          type: integer
+        lastname:
+          type: string
+        notes:
+          type: string
+        phones:
+          type: object
+          properties:
+            activated:
+              type: boolean
+            capabilities:
+              type: string
+              description: Order Status
+              example: approved
+              enum:
+              - auto
+              - push
+              - sms
+              - phone
+              - mobile_otp
+            encrypted:
+              type: string
+            extension:
+              type: string
+            fingerprint:
+              type: string
+            last_seen:
+              type: string
+            model:
+              type: string
+            name:
+              type: string
+            number:
+              type: string
+            phone_id:
+              type: string
+            platform:
+              type: string
+            postdelay:
+              type: string
+            predelay:
+              type: string
+            screenlock:
+              type: string
+            sms_passcodes_sent:
+              type: boolean
+            tampered:
+              type: string
+            type:
+              type: string
+        realname:
+          type: string
+        status:
+          type: string
+          description: User's Status
+          example: active
+          enum:
+            - active
+            - bypassed
+            - disabled
+        tokens:
+          type: object
+          properties:
+            serial:
+              type: string
+            token_id:
+              type: string
+            type:
+              type: string
+        user_id:
+          type: string
+        username:
+          type: string
+        webauthncredentials:
+          type: object
+          properties:
+            credential_name:
+              type: string
+            date_added:
+              type: integer
+            label:
+              type: string
+            webauthnkey:
+              type: string
+  CreateUser:
+    type: object
+    properties:
+      username:
+        type: string
+      email:
+        type: string
+      realname:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      notes:
+        type: string
+      alias:
+        type: string
+      status:
+        type: string
+        description: User's Status
+        example: active
+        enum:
+          - active
+          - bypassed
+          - disabled
+  HardwareTokensForUser:
+    type: object
+    properties:
+      stat:
+        type: string
+      response:
+        type: array
+        items:
+          properties:
+            serial:
+              type: string
+            token_id:
+              type: string
+            totp_step:
+              type: object
+  AuthenticationLogs:
+    type: object
+    properties:
+      stat:
+        type: string
+      response:
+        type: object
+        properties:
+          authlogs:
+            type: array
+            items:
+              properties:
+                access_device:
+                  type: object
+                  properties:
+                    browser:
+                      type: string
+                    browser_version:
+                      type: string
+                    flash_version:
+                      type: string
+                    hostname:
+                      type: string
+                    ip:
+                      type: string
+                    is_encryption_enabled:
+                      type: boolean
+                    is_firewall_enabled:
+                      type: boolean
+                    is_password_set:
+                      type: boolean
+                    java_version:
+                      type: string
+                    location:
+                      type: object
+                      properties:
+                        city:
+                          type: string
+                        country:
+                          type: string
+                        state:
+                          type: string
+                    os:
+                      type: string
+                    os_version:
+                      type: string
+                    security_agents:
+                      type: object
+                adaptive_trust_assessments:
+                  type: object
+                  properties:
+                    more_secure_auth:
+                      type: object
+                      properties:
+                        features_version:
+                          type: string
+                        model_version:
+                          type: string
+                        policy_enabled:
+                          type: boolean
+                        reason:
+                          type: string
+                        trust_level:
+                          type: string
+                    remember_me:
+                       type: object
+                       properties:
+                        features_version:
+                          type: string
+                        model_version:
+                          type: string
+                        policy_enabled:
+                          type: boolean
+                        reason:
+                          type: string
+                        trust_level:
+                          type: string
+                alias:
+                  type: string
+                application:
+                  type: object
+                  properties:
+                    key:
+                      type: string
+                    name:
+                      type: string
+                auth_device:
+                  type: object
+                  properties:
+                    ip:
+                      type: string
+                    key:
+                      type: string
+                    location:
+                      type: object
+                      properties:
+                        city:
+                          type: string
+                        country:
+                          type: string
+                        state:
+                          type: string
+                name:
+                  type: string
+                email:
+                  type: string
+                event_type:
+                  type: string
+                factor:
+                  type: string
+                isotimestamp:
+                  type: string
+                reason:
+                  type: string
+                result:
+                  type: string
+                timestamp:
+                  type: integer
+                trusted_endpoint_status:
+                  type: string
+                txid:
+                  type: string
+                user:
+                  type: object
+                  properties:
+                    groups:
+                      type: array
+                      items:
+                        properties:
+                          name:
+                            type: string
+                            description: name of the object
+                    key:
+                      type: string
+                    name:
+                      type: string
+          metadata:
+            type: object
+            properties:
+              next_offset:
+               type: array
+               items:
+                 properties:
+                   name:
+                     type: string
+                     description: offset in milliseconds
+              total_objects:
+                type: integer
+
+externalDocs:
+  description: Find out more about Duo
+  url: http://duo.com
+

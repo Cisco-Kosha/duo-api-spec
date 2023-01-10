@@ -1,0 +1,1320 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "contact": {
+      "email": "support@duo.com"
+    },
+    "description": "",
+    "termsOfService": "https://duo.com/legal/terms",
+    "title": "Cisco Duo",
+    "version": "1.0.6"
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/admin/v1/logs/authentication": {
+      "get": {
+        "parameters": [
+          {
+            "description": "The maximum number of records returned. Default 100.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The offset at which to start record retrieval.",
+            "in": "query",
+            "name": "next_offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Sort records in order.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Return records that have a 13 character Unix timestamp in milliseconds of mintime or later. This value must be strictly less then maxtime.",
+            "in": "query",
+            "name": "mintime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Return records that have a 13 character Unix timestamp in milliseconds of maxtime or earlier. This value must be strictly greater then mintime.",
+            "in": "query",
+            "name": "maxtime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "A user's user_id or the key value for a user returned in the authentication log output.",
+            "in": "query",
+            "name": "users",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The type of authentication event.",
+            "in": "query",
+            "name": "event_types",
+            "required": false,
+            "schema": {
+              "enum": [
+                "authentication",
+                "enrollment"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "The factor or method used for an authentication attempt.",
+            "in": "query",
+            "name": "factors",
+            "required": false,
+            "schema": {
+              "enum": [
+                "duo_push",
+                "phone_call",
+                "u2f_token",
+                "hardware_token",
+                "bypass_code",
+                "sms_passcode",
+                "duo_mobile_passcode",
+                "yubikey_code",
+                "passcode",
+                "digipass_go_7_token",
+                "WebAuthn Security Key",
+                "sms_refresh",
+                "not_available",
+                "remembered_device",
+                "trusted_network",
+                "trusted_mobile_authenticator"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "The reason associated with an authentication attempt.",
+            "in": "query",
+            "name": "reasons",
+            "required": false,
+            "schema": {
+              "enum": [
+                "user_marked_fraud",
+                "deny_unenrolled_user",
+                "error",
+                "locked_out",
+                "user_disabled",
+                "user_cancelled",
+                "invalid_passcode",
+                "no_response",
+                "location_restricted",
+                "factor_restricted",
+                "platform_restricted",
+                "user_approved",
+                "valid_passcode",
+                "allowed_by_policy",
+                "trusted_location",
+                "bypass_user"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "A group's group_id or the key value for a group returned in the authentication log output.",
+            "in": "query",
+            "name": "groups",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A group's group_id or the key value for a group returned in the authentication log output.",
+            "in": "query",
+            "name": "phone_numbers",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The result of an authentication attempt.",
+            "in": "query",
+            "name": "results",
+            "required": false,
+            "schema": {
+              "enum": [
+                "success",
+                "denied",
+                "fraud"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationLogs"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid or missing parameters or mintime is after the maxtime."
+          }
+        },
+        "tags": [
+          "logs"
+        ],
+        "description": "Returns a paged list of authentication log events ranging from the last 180 days up to as recently as two minutes before the API request. ",
+        "operationId": "retrieve_auth_logs",
+        "summary": "Retrieve authentication logs"
+      }
+    },
+    "/admin/v1/tokens": {
+      "get": {
+        "parameters": [
+          {
+            "description": "The maximum number of records returned",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The offset from 0 at which to start record retrieval.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Specify a type and serial number to look up a single hardware token.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "enum": [
+                "h6",
+                "h8",
+                "d1",
+                "yk"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "The serial number of the hardware token.",
+            "in": "query",
+            "name": "serial",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HardwareTokens"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid parameters."
+          }
+        },
+        "tags": [
+          "tokens"
+        ],
+        "description": "Returns a paged list of OTP hardware tokens. To fetch all results, call repeatedly with the offset parameter as long as the result metadata has a next_offset value. If no type and serial parameters are provided, the list will contain all hardware tokens. Otherwise, the list will contain either a single hardware token (if a match was found) or no hardware tokens. Requires \"Grant read resource\" API permission.",
+        "operationId": "retrieve_hardware_tokens",
+        "summary": "Retrieve hardware tokens"
+      }
+    },
+    "/admin/v1/tokens/{token_id}": {
+      "get": {
+        "parameters": [
+          {
+            "description": "ID of the token",
+            "in": "path",
+            "name": "token_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The maximum number of records returned",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The offset from 0 at which to start record retrieval.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Specify a type and serial number to look up a single hardware token.",
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "enum": [
+                "h6",
+                "h8",
+                "d1",
+                "yk"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "The serial number of the hardware token.",
+            "in": "query",
+            "name": "serial",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HardwareTokens"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid parameters."
+          }
+        },
+        "tags": [
+          "tokens"
+        ],
+        "description": "Return the single hardware token with token_id. Requires \"Grant read resource\" API permission.",
+        "operationId": "retrieve_hardware_tokens_by_id",
+        "summary": "Retrieve hardware tokens by id"
+      }
+    },
+    "/admin/v1/users": {
+      "get": {
+        "parameters": [
+          {
+            "description": "The maximum number of records returned",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The offset from 0 at which to start record retrieval.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Specify a user name (or username alias) to look up a single user.",
+            "in": "query",
+            "name": "username",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveUsers"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid parameters."
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "description": "Returns a paged list of users. To fetch all results, call repeatedly with the offset parameter as long as the result metadata has a next_offset value.",
+        "operationId": "retrieve_users",
+        "summary": "Retrieve users"
+      },
+      "post": {
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveUsers"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid parameters."
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "description": "Create new user",
+        "operationId": "create user",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUser"
+              }
+            }
+          },
+          "description": "Create user parameters"
+        },
+        "summary": "Create new user"
+      }
+    },
+    "/admin/v1/users/{userId}": {
+      "get": {
+        "parameters": [
+          {
+            "description": "ID of the user that needs to be fetched",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RetrieveUsers"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "No user was found with the given user_id."
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "description": "Return the single user with user_id. Requires \"Grant read resource\" API permission.",
+        "operationId": "retrieve_users_by_id",
+        "summary": "Retrieve users By Id"
+      }
+    },
+    "/admin/v1/users/{userId}/tokens": {
+      "get": {
+        "parameters": [
+          {
+            "description": "ID of the user for whom the tokens needs to be fetched",
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The maximum number of records returned",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The offset from 0 at which to start record retrieval.",
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HardwareTokensForUser"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "No user was found with the given user_id."
+          }
+        },
+        "tags": [
+          "admin"
+        ],
+        "description": "Returns a paged list of OTP hardware tokens associated with the user with ID user_id",
+        "operationId": "retrieve_hardware_tokens_for_users_by_id",
+        "summary": "Retrieve hardware tokens by user id"
+      }
+    },
+    "/auth/v2/check": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthApiResponse"
+                }
+              }
+            },
+            "description": "successful operation"
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "description": "The /check endpoint can be called to verify that the Auth API integration and secret keys are valid, and that the signature is being generated properly.",
+        "operationId": "check",
+        "summary": "Authentication & HMAC signature check"
+      }
+    },
+    "/auth/v2/enroll": {
+      "post": {
+        "parameters": [
+          {
+            "description": "Username for the created user. If not given, a random username will be assigned and returned",
+            "in": "query",
+            "name": "username",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Seconds for which the activation code will remain valid. Default 86400.",
+            "in": "query",
+            "name": "valid_secs",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollResponse"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid or missing parameters, or a user with username already exists."
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "description": "The /enroll endpoint provides a programmatic way to enroll new users with Duo two-factor authentication. It creates the user in Duo and returns a code (as a QR code) that Duo Mobile can scan with its built-in camera.",
+        "operationId": "enroll",
+        "summary": "Enroll new users with Duo two-factor authentication"
+      }
+    },
+    "/auth/v2/enroll_status": {
+      "post": {
+        "parameters": [
+          {
+            "description": "Username for the created user. If not given, a random username will be assigned and returned",
+            "in": "query",
+            "name": "username",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Activation code, as returned from /enroll.",
+            "in": "query",
+            "name": "activation_code",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EnrollStatusResponse"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid or missing parameters, or a user with username already exists."
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "description": "The /enroll endpoint provides a programmatic way to enroll new users with Duo two-factor authentication. It creates the user in Duo and returns a code (as a QR code) that Duo Mobile can scan with its built-in camera.",
+        "operationId": "enroll_status",
+        "summary": "Check whether a user has completed enrollment."
+      }
+    },
+    "/auth/v2/ping": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthApiResponse"
+                }
+              }
+            },
+            "description": "successful operation"
+          }
+        },
+        "tags": [
+          "auth"
+        ],
+        "description": "The /ping endpoint acts as a \"liveness check\" that can be called to verify that Duo is up before trying to call other Auth API endpoints.",
+        "operationId": "ping",
+        "summary": "liveliness check"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuthApiResponse": {
+        "properties": {
+          "response": {
+            "$ref": "#/components/schemas/Ping"
+          },
+          "stat": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AuthenticationLogs": {
+        "properties": {
+          "response": {
+            "properties": {
+              "authlogs": {
+                "items": {
+                  "properties": {
+                    "access_device": {
+                      "properties": {
+                        "browser": {
+                          "type": "string"
+                        },
+                        "browser_version": {
+                          "type": "string"
+                        },
+                        "flash_version": {
+                          "type": "string"
+                        },
+                        "hostname": {
+                          "type": "string"
+                        },
+                        "ip": {
+                          "type": "string"
+                        },
+                        "is_encryption_enabled": {
+                          "type": "boolean"
+                        },
+                        "is_firewall_enabled": {
+                          "type": "boolean"
+                        },
+                        "is_password_set": {
+                          "type": "boolean"
+                        },
+                        "java_version": {
+                          "type": "string"
+                        },
+                        "location": {
+                          "properties": {
+                            "city": {
+                              "type": "string"
+                            },
+                            "country": {
+                              "type": "string"
+                            },
+                            "state": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "os": {
+                          "type": "string"
+                        },
+                        "os_version": {
+                          "type": "string"
+                        },
+                        "security_agents": {
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "adaptive_trust_assessments": {
+                      "properties": {
+                        "more_secure_auth": {
+                          "properties": {
+                            "features_version": {
+                              "type": "string"
+                            },
+                            "model_version": {
+                              "type": "string"
+                            },
+                            "policy_enabled": {
+                              "type": "boolean"
+                            },
+                            "reason": {
+                              "type": "string"
+                            },
+                            "trust_level": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        },
+                        "remember_me": {
+                          "properties": {
+                            "features_version": {
+                              "type": "string"
+                            },
+                            "model_version": {
+                              "type": "string"
+                            },
+                            "policy_enabled": {
+                              "type": "boolean"
+                            },
+                            "reason": {
+                              "type": "string"
+                            },
+                            "trust_level": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "alias": {
+                      "type": "string"
+                    },
+                    "application": {
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "auth_device": {
+                      "properties": {
+                        "ip": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        },
+                        "location": {
+                          "properties": {
+                            "city": {
+                              "type": "string"
+                            },
+                            "country": {
+                              "type": "string"
+                            },
+                            "state": {
+                              "type": "string"
+                            }
+                          },
+                          "type": "object"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "event_type": {
+                      "type": "string"
+                    },
+                    "factor": {
+                      "type": "string"
+                    },
+                    "isotimestamp": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "integer"
+                    },
+                    "trusted_endpoint_status": {
+                      "type": "string"
+                    },
+                    "txid": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "properties": {
+                        "groups": {
+                          "items": {
+                            "properties": {
+                              "name": {
+                                "description": "name of the object",
+                                "type": "string"
+                              }
+                            },
+                            "type": "object"
+                          },
+                          "type": "array"
+                        },
+                        "key": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "metadata": {
+                "properties": {
+                  "next_offset": {
+                    "items": {
+                      "properties": {
+                        "name": {
+                          "description": "offset in milliseconds",
+                          "type": "string"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "type": "array"
+                  },
+                  "total_objects": {
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "type": "object"
+          },
+          "stat": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreateUser": {
+        "properties": {
+          "alias": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "realname": {
+            "type": "string"
+          },
+          "status": {
+            "description": "User's Status",
+            "enum": [
+              "active",
+              "bypassed",
+              "disabled"
+            ],
+            "example": "active",
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "EnrollResponse": {
+        "properties": {
+          "activation_barcode": {
+            "type": "string"
+          },
+          "activation_code": {
+            "type": "string"
+          },
+          "expiration": {
+            "type": "integer"
+          },
+          "user_id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "EnrollStatusResponse": {
+        "properties": {
+          "response": {
+            "type": "string"
+          },
+          "stat": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "HardwareTokens": {
+        "properties": {
+          "response": {
+            "properties": {
+              "admins": {
+                "items": {
+                  "properties": {
+                    "admin_id": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "last_login": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "serial": {
+                "type": "string"
+              },
+              "token_id": {
+                "type": "string"
+              },
+              "totp_step": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "users": {
+                "items": {
+                  "properties": {
+                    "alias1": {
+                      "type": "string"
+                    },
+                    "alias2": {
+                      "type": "string"
+                    },
+                    "created": {
+                      "type": "integer"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "is_enrolled": {
+                      "type": "boolean"
+                    },
+                    "realname": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "user_id": {
+                      "type": "string"
+                    },
+                    "username": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "stat": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "HardwareTokensForUser": {
+        "properties": {
+          "response": {
+            "items": {
+              "properties": {
+                "serial": {
+                  "type": "string"
+                },
+                "token_id": {
+                  "type": "string"
+                },
+                "totp_step": {
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "stat": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Ping": {
+        "properties": {
+          "time": {
+            "format": "int64",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "RetrieveUsers": {
+        "items": {
+          "properties": {
+            "alias1": {
+              "type": "string"
+            },
+            "alias2": {
+              "type": "string"
+            },
+            "alias3": {
+              "type": "string"
+            },
+            "alias4": {
+              "type": "string"
+            },
+            "aliases": {
+              "properties": {
+                "alias1": {
+                  "type": "string"
+                },
+                "alias2": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "created": {
+              "type": "integer"
+            },
+            "email": {
+              "type": "string"
+            },
+            "firstname": {
+              "type": "string"
+            },
+            "groups": {
+              "properties": {
+                "desc": {
+                  "type": "string"
+                },
+                "group_id": {
+                  "type": "string"
+                },
+                "mobile_otp_enabled": {
+                  "type": "boolean"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "push_enabled": {
+                  "type": "boolean"
+                },
+                "sms_enabled": {
+                  "type": "boolean"
+                },
+                "status": {
+                  "type": "string"
+                },
+                "voice_enabled": {
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
+            },
+            "is_enrolled": {
+              "type": "boolean"
+            },
+            "last_directory_sync": {
+              "type": "integer"
+            },
+            "last_login": {
+              "type": "integer"
+            },
+            "lastname": {
+              "type": "string"
+            },
+            "notes": {
+              "type": "string"
+            },
+            "phones": {
+              "properties": {
+                "activated": {
+                  "type": "boolean"
+                },
+                "capabilities": {
+                  "description": "Order Status",
+                  "enum": [
+                    "auto",
+                    "push",
+                    "sms",
+                    "phone",
+                    "mobile_otp"
+                  ],
+                  "example": "approved",
+                  "type": "string"
+                },
+                "encrypted": {
+                  "type": "string"
+                },
+                "extension": {
+                  "type": "string"
+                },
+                "fingerprint": {
+                  "type": "string"
+                },
+                "last_seen": {
+                  "type": "string"
+                },
+                "model": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "number": {
+                  "type": "string"
+                },
+                "phone_id": {
+                  "type": "string"
+                },
+                "platform": {
+                  "type": "string"
+                },
+                "postdelay": {
+                  "type": "string"
+                },
+                "predelay": {
+                  "type": "string"
+                },
+                "screenlock": {
+                  "type": "string"
+                },
+                "sms_passcodes_sent": {
+                  "type": "boolean"
+                },
+                "tampered": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "realname": {
+              "type": "string"
+            },
+            "stat": {
+              "type": "string"
+            },
+            "status": {
+              "description": "User's Status",
+              "enum": [
+                "active",
+                "bypassed",
+                "disabled"
+              ],
+              "example": "active",
+              "type": "string"
+            },
+            "tokens": {
+              "properties": {
+                "serial": {
+                  "type": "string"
+                },
+                "token_id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "user_id": {
+              "type": "string"
+            },
+            "username": {
+              "type": "string"
+            },
+            "webauthncredentials": {
+              "properties": {
+                "credential_name": {
+                  "type": "string"
+                },
+                "date_added": {
+                  "type": "integer"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "webauthnkey": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "type": "array"
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "in": "header",
+        "name": "api_key",
+        "type": "apiKey"
+      }
+    }
+  },
+  "tags": [
+    {
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://duo.com/docs/authapi#endpoints"
+      },
+      "description": "Duo Auth API",
+      "name": "auth"
+    },
+    {
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "https://duo.com/docs/adminapi#endpoints"
+      },
+      "description": "Duo Admin API",
+      "name": "admin"
+    }
+  ],
+  "externalDocs": {
+    "description": "Find out more about Duo",
+    "url": "http://duo.com"
+  }
+}
