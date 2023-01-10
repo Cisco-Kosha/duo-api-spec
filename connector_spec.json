@@ -1,0 +1,50 @@
+{
+  "version": "2.0.0",
+  "fields": [
+    {
+      "field": "SERVER_URL",
+      "displayName": "Duo Server URL",
+      "type": "String",
+      "minLength": 6,
+      "maxLength": 40,
+      "required": true,
+      "description": "Duo Server URL",
+      "example": "api-demodemo.duosecurity.com",
+      "helpSection": "Obtain this value from the Duo Admin Panel and use it exactly as shown there."
+    },
+    {
+      "field": "IKEY",
+      "displayName": "Duo Integration Key",
+      "type": "String",
+      "minLength": 4,
+      "maxLength": 60,
+      "required": true,
+      "description": "Duo Admin API Application Integration Key",
+      "example": "DIZDNTNCBNSSKG751XBA",
+      "helpSection": "Obtain this value from the Duo Admin Panel and use it exactly as shown there."
+    },
+    {
+      "field": "SKEY",
+      "displayName": "Duo Secret Key",
+      "type": "String",
+      "minLength": 4,
+      "maxLength": 60,
+      "required": true,
+      "description": "Duo Admin API Application Secret Key",
+      "example": "7mbbmdRrgPSXq8CpbrqWGmjUdFy1Gy1iNrV8Yuvc",
+      "helpSection": "Obtain this value from the Duo Admin Panel and use it exactly as shown there."
+    },
+    {
+      "field": "AUTH_TYPE",
+      "displayName": "Duo Auth Type",
+      "type": "String",
+      "minLength": 4,
+      "maxLength": 60,
+      "required": true,
+      "description": "Duo API Auth Type",
+      "default": "HMAC",
+      "example": "HMAC",
+      "helpSection": ""
+    }
+  ]
+}
