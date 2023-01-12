@@ -1286,13 +1286,6 @@
         },
         "type": "array"
       }
-    },
-    "securitySchemes": {
-      "api_key": {
-        "in": "header",
-        "name": "api_key",
-        "type": "apiKey"
-      }
     }
   },
   "tags": [
