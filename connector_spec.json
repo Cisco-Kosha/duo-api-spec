@@ -8,6 +8,7 @@
       "minLength": 6,
       "maxLength": 40,
       "required": true,
+      "prefix": "https://",
       "description": "Duo Server URL",
       "example": "api-demodemo.duosecurity.com",
       "helpSection": "Obtain this value from the Duo Admin Panel and use it exactly as shown there."
