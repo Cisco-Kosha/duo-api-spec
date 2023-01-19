@@ -15,186 +15,6 @@
     }
   ],
   "paths": {
-    "/admin/v1/logs/authentication": {
-      "get": {
-        "parameters": [
-          {
-            "description": "The maximum number of records returned. Default 100.",
-            "in": "query",
-            "name": "limit",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "description": "The offset at which to start record retrieval.",
-            "in": "query",
-            "name": "next_offset",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Sort records in order.",
-            "in": "query",
-            "name": "sort",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "Return records that have a 13 character Unix timestamp in milliseconds of mintime or later. This value must be strictly less then maxtime.",
-            "in": "query",
-            "name": "mintime",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "description": "Return records that have a 13 character Unix timestamp in milliseconds of maxtime or earlier. This value must be strictly greater then mintime.",
-            "in": "query",
-            "name": "maxtime",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "description": "A user's user_id or the key value for a user returned in the authentication log output.",
-            "in": "query",
-            "name": "users",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "The type of authentication event.",
-            "in": "query",
-            "name": "event_types",
-            "required": false,
-            "schema": {
-              "enum": [
-                "authentication",
-                "enrollment"
-              ],
-              "type": "string"
-            }
-          },
-          {
-            "description": "The factor or method used for an authentication attempt.",
-            "in": "query",
-            "name": "factors",
-            "required": false,
-            "schema": {
-              "enum": [
-                "duo_push",
-                "phone_call",
-                "u2f_token",
-                "hardware_token",
-                "bypass_code",
-                "sms_passcode",
-                "duo_mobile_passcode",
-                "yubikey_code",
-                "passcode",
-                "digipass_go_7_token",
-                "WebAuthn Security Key",
-                "sms_refresh",
-                "not_available",
-                "remembered_device",
-                "trusted_network",
-                "trusted_mobile_authenticator"
-              ],
-              "type": "string"
-            }
-          },
-          {
-            "description": "The reason associated with an authentication attempt.",
-            "in": "query",
-            "name": "reasons",
-            "required": false,
-            "schema": {
-              "enum": [
-                "user_marked_fraud",
-                "deny_unenrolled_user",
-                "error",
-                "locked_out",
-                "user_disabled",
-                "user_cancelled",
-                "invalid_passcode",
-                "no_response",
-                "location_restricted",
-                "factor_restricted",
-                "platform_restricted",
-                "user_approved",
-                "valid_passcode",
-                "allowed_by_policy",
-                "trusted_location",
-                "bypass_user"
-              ],
-              "type": "string"
-            }
-          },
-          {
-            "description": "A group's group_id or the key value for a group returned in the authentication log output.",
-            "in": "query",
-            "name": "groups",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "A group's group_id or the key value for a group returned in the authentication log output.",
-            "in": "query",
-            "name": "phone_numbers",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "The result of an authentication attempt.",
-            "in": "query",
-            "name": "results",
-            "required": false,
-            "schema": {
-              "enum": [
-                "success",
-                "denied",
-                "fraud"
-              ],
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AuthenticationLogs"
-                }
-              }
-            },
-            "description": "successful operation"
-          },
-          "400": {
-            "description": "Invalid or missing parameters or mintime is after the maxtime."
-          }
-        },
-        "tags": [
-          "logs"
-        ],
-        "description": "Returns a paged list of authentication log events ranging from the last 180 days up to as recently as two minutes before the API request. ",
-        "operationId": "retrieve_auth_logs",
-        "summary": "Retrieve authentication logs"
-      }
-    },
     "/admin/v1/tokens": {
       "get": {
         "parameters": [
@@ -517,6 +337,186 @@
         "description": "Returns a paged list of OTP hardware tokens associated with the user with ID user_id",
         "operationId": "retrieve_hardware_tokens_for_users_by_id",
         "summary": "Retrieve hardware tokens by user id"
+      }
+    },
+    "/admin/v2/logs/authentication": {
+      "get": {
+        "parameters": [
+          {
+            "description": "The maximum number of records returned. Default 100.",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "The offset at which to start record retrieval.",
+            "in": "query",
+            "name": "next_offset",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Sort records in order.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Return records that have a 13 character Unix timestamp in milliseconds of mintime or later. This value must be strictly less then maxtime.",
+            "in": "query",
+            "name": "mintime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Return records that have a 13 character Unix timestamp in milliseconds of maxtime or earlier. This value must be strictly greater then mintime.",
+            "in": "query",
+            "name": "maxtime",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "A user's user_id or the key value for a user returned in the authentication log output.",
+            "in": "query",
+            "name": "users",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The type of authentication event.",
+            "in": "query",
+            "name": "event_types",
+            "required": false,
+            "schema": {
+              "enum": [
+                "authentication",
+                "enrollment"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "The factor or method used for an authentication attempt.",
+            "in": "query",
+            "name": "factors",
+            "required": false,
+            "schema": {
+              "enum": [
+                "duo_push",
+                "phone_call",
+                "u2f_token",
+                "hardware_token",
+                "bypass_code",
+                "sms_passcode",
+                "duo_mobile_passcode",
+                "yubikey_code",
+                "passcode",
+                "digipass_go_7_token",
+                "WebAuthn Security Key",
+                "sms_refresh",
+                "not_available",
+                "remembered_device",
+                "trusted_network",
+                "trusted_mobile_authenticator"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "The reason associated with an authentication attempt.",
+            "in": "query",
+            "name": "reasons",
+            "required": false,
+            "schema": {
+              "enum": [
+                "user_marked_fraud",
+                "deny_unenrolled_user",
+                "error",
+                "locked_out",
+                "user_disabled",
+                "user_cancelled",
+                "invalid_passcode",
+                "no_response",
+                "location_restricted",
+                "factor_restricted",
+                "platform_restricted",
+                "user_approved",
+                "valid_passcode",
+                "allowed_by_policy",
+                "trusted_location",
+                "bypass_user"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "A group's group_id or the key value for a group returned in the authentication log output.",
+            "in": "query",
+            "name": "groups",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A group's group_id or the key value for a group returned in the authentication log output.",
+            "in": "query",
+            "name": "phone_numbers",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "The result of an authentication attempt.",
+            "in": "query",
+            "name": "results",
+            "required": false,
+            "schema": {
+              "enum": [
+                "success",
+                "denied",
+                "fraud"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticationLogs"
+                }
+              }
+            },
+            "description": "successful operation"
+          },
+          "400": {
+            "description": "Invalid or missing parameters or mintime is after the maxtime."
+          }
+        },
+        "tags": [
+          "logs"
+        ],
+        "description": "Returns a paged list of authentication log events ranging from the last 180 days up to as recently as two minutes before the API request. ",
+        "operationId": "retrieve_auth_logs",
+        "summary": "Retrieve authentication logs"
       }
     },
     "/auth/v2/check": {
